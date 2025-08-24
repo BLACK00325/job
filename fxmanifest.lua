@@ -1,21 +1,35 @@
 fx_version 'cerulean'
 game 'gta5'
 
-author 'Hoàng Đức'
+description 'Modern DW Garages System'
 version '1.0.0'
-description 'MojiaVehicleKeys - Best vehicle keys for MojiaCity Framework'
 
 shared_scripts {
-	'@qb-core/shared/locale.lua',
-    	'locales/en.lua', -- Change this to your preferred language
-	'config.lua'
+    '@qb-core/shared/locale.lua',
+    'config.lua',
 }
-client_script 'client.lua'
+
+client_scripts {
+    'client.lua',
+}
+
 server_scripts {
     '@oxmysql/lib/MySQL.lua',
-    'server.lua'
+    'server.lua',
 }
 
+ui_page 'html/index.html'
 
+files {
+    'html/index.html',
+    'html/script.js',
+    'html/style.css',
+}
+
+escrow_ignore {
+    'config.lua'
+}
+
+dependency 'qb-core'
 
 lua54 'yes'

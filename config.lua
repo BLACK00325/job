@@ -1,17 +1,454 @@
 Config = {}
-Config.UnlockedChance = 0
-Config.RemoveLockpickNormal = 0.5 -- Chance to remove lockpick on fail
-Config.RemoveLockpickAdvanced = 0.2 -- Chance to remove advanced lockpick on fail
-Config.AlertCooldown = 10000 -- 10 seconds
-Config.PoliceAlertChance = 0.5 -- Chance of alerting police during the day
-Config.PoliceNightAlertChance = 0.25 -- Chance of alerting police at night (times:01-06)
-Config.PercentageWithVehicleValue = 10
-Config.PedList = { -- Peds that will be spawned in (if you change a ped model here you need to also change the ped model in client/addons.lua qb-target exports)
-	{
-		model = "s_m_m_highsec_04",
-		coords = vector3(238.29, -824.18, 30.08),               
-		heading = 235.06,
-		gender = "male",
-        scenario = "WORLD_HUMAN_AA_SMOKE"
-	},
+
+-- General garage settings
+Config.UseTarget = false -- Use qb-target interactions instead of DrawText3D
+Config.VehicleSpawnDistance = 5.0 -- Distance to spawn vehicles from garage point
+Config.SpawnTimeout = 30000 -- Time (in ms) before vehicle spawning times out
+Config.VehicleFadeTime = 2000 -- Time in milliseconds for vehicle fade animation
+Config.TransferCost = 500 -- Cost to transfer a vehicle between garages
+Config.EnableTransferAnimation = true  -- Set to false to disable the truck animation
+Config.EnableImpound = true -- false to remove impound
+Config.ImpoundFee = 500  -- Base fee to retrieve a vehicle from impound
+Config.AdditionalDayFee = 250  -- Additional fee per day in impound
+Config.MaxFeeMultiplier = 5  -- Maximum multiplier for fees
+Config.ShowJobVehiclesTab = true -- Show Job Vehicles tab in garage
+Config.LostVehicleTimeout = 7200 -- Time in seconds before an out vehicle is considered lost (2 hours)
+Config.LostVehicleTimeout = 3600 -- 1 hour
+Config.ImpoundJobs = {
+    ['police'] = true,
+    ['sheriff'] = true,
+    ['highway'] = true
+}
+Config.ImpounderTypes = {
+    ["police"] = "Police",
+    ["government"] = "Government",
+    ["judge"] = "Court",
+    ["admin"] = "Administrator"
+}
+
+Config.JobParkingSpots = {
+    ['police'] = {
+        vector4(446.05395, -1025.607, 28.646846, 10.391553),
+        vector4(442.25765, -1025.844, 28.717491, 37.374588),
+        vector4(438.53656, -1026.5, 28.78754, 42.148361),
+        vector4(434.99621, -1026.865, 28.851186, 26.760805),
+        vector4(431.12667, -1027.418, 28.921892, 50.015827),
+        vector4(427.40734, -1027.538, 28.987623, 0.8152692)
+    }
+}
+
+
+-- Blip settings
+Config.GarageBlip = {
+    Enable = true,
+    Sprite = 357,
+    Color = 3,
+    Scale = 0.7,
+    Display = 4,
+    ShortRange = true
+}
+
+-- Shared garage settings
+Config.EnableSharedGarages = true -- Enable/disable shared garages feature
+Config.MaxSharedVehicles = 15 -- Maximum vehicles per shared garage
+Config.MaxSharedGarageMembers = 10 -- Maximum members per shared garage
+Config.SharedGarageBlip = {
+    Enable = true,
+    Sprite = 357,
+    Color = 5, -- Different color for shared garages (purple)
+    Scale = 0.7,
+    Display = 4,
+    ShortRange = true
+}
+
+-- Jobs that have access to job vehicles
+Config.JobVehicleAccess = {
+    ['police'] = true,
+    ['ambulance'] = true,
+    ['mechanic'] = true,
+}
+
+-- Public garages
+Config.Garages = {
+    ['legion'] = {
+        label = 'Legion Square Garage',
+        coords = vector4(215.9, -810.65, 30.73, 339.54),
+        type = 'public',
+        spawnPoints = {
+            vector4(222.89, -804.16, 30.15, 248.0),
+            vector4(224.51, -798.82, 30.15, 248.0),
+            vector4(220.71, -808.72, 30.15, 248.0),
+            vector4(218.22, -812.71, 30.15, 248.0),
+        },
+        -- Transfer animation points
+        transferSpawn = vector4(195.4, -825.3, 30.2, 340.0),
+        transferArrival = vector4(213.2, -799.8, 30.1, 250.0),
+        transferExit = vector4(178.5, -833.6, 30.8, 160.0),
+    },
+    ['pinkcage'] = {
+        label = 'Pink Cage Garage',
+        coords = vector4(273.0, -343.85, 44.92, 161.0),
+        type = 'public',
+        spawnPoints = {
+            vector4(270.94, -339.8, 44.92, 160.0),
+            vector4(276.54, -342.56, 44.92, 160.0),
+            vector4(265.86, -337.32, 44.92, 160.0),
+        },
+        -- Transfer animation points
+        transferSpawn = vector4(251.6, -372.8, 44.6, 70.0),
+        transferArrival = vector4(274.3, -333.5, 44.9, 160.0),
+        transferExit = vector4(238.2, -386.5, 44.3, 250.0),
+    },
+    ['pillbox'] = {
+        label = 'Pillbox Garage',
+        coords = vector4(215.68, -1384.14, 30.58, 320.0),
+        type = 'public',
+        spawnPoint = vector4(219.01, -1382.13, 30.58, 91.34),
+        -- Transfer animation points
+        transferSpawn = vector4(238.5, -1394.5, 30.5, 50.0),
+        transferArrival = vector4(217.3, -1377.2, 30.6, 140.0),
+        transferExit = vector4(248.8, -1407.2, 30.4, 320.0),
+    },
+    ['moviestar'] = {
+        label = 'Movie Star Garage',
+        coords = vector4(-1039.78, -855.05, 4.86, 120.01),
+        type = 'public',
+        spawnPoint = vector4(-1042.94, -856.54, 4.51, 31.37),
+        -- Transfer animation points
+        transferSpawn = vector4(-1057.3, -876.8, 5.0, 30.0),
+        transferArrival = vector4(-1045.2, -850.1, 4.5, 300.0),
+        transferExit = vector4(-1073.8, -882.5, 4.5, 210.0),
+    },
+    ['paleto'] = {
+        label = 'Paleto Garage',
+        coords = vector4(80.99, 6361.25, 31.34, 134.0),
+        type = 'public',
+        spawnPoint = vector4(84.91, 6365.16, 31.24, 45.0),
+        -- Transfer animation points
+        transferSpawn = vector4(105.7, 6342.2, 31.3, 315.0),
+        transferArrival = vector4(77.2, 6355.1, 31.3, 135.0),
+        transferExit = vector4(120.5, 6329.8, 31.3, 225.0),
+    },
+    ['sandy'] = {
+        label = 'Sandy Shores Garage',
+        coords = vector4(1728.67, 3710.93, 34.22, 20.0),
+        type = 'public',
+        spawnPoint = vector4(1724.84, 3715.38, 34.19, 19.68),
+        -- Transfer animation points
+        transferSpawn = vector4(1746.8, 3685.9, 34.6, 210.0),
+        transferArrival = vector4(1732.6, 3707.4, 34.2, 20.0),
+        transferExit = vector4(1752.3, 3668.7, 34.5, 120.0),
+    },
+    ['beach'] = {
+        label = 'beach Garage',
+        coords = vector4(-2027.03, -469.59, 11.41, 327.32),
+        type = 'public',
+        spawnPoint = vector4(-2024.61, -472.24, 11.41, 311.49),
+        -- Transfer animation points
+        transferSpawn = vector4(-2023.61, -472.24, 11.41, 311.49),
+        transferArrival = vector4(-2022.61, -472.24, 11.41, 311.49),
+        transferExit = vector4(-2021.61, -472.24, 11.41, 311.49),
+    },
+    ['la spada'] = {
+        label = 'la spada Garage',
+        coords = vector4(-1054.54, -1411.77, 5.46, 65.34),
+        type = 'public',
+        spawnPoint = vector4(-1059.24, -1417.55, 5.43, 248.61),
+        -- Transfer animation points
+        transferSpawn = vector4(-1059.24, -1417.55, 5.43, 248.61),
+        transferArrival = vector4(-1059.24, -1417.55, 5.43, 248.61),
+        transferExit = vector4(-1059.24, -1417.55, 5.43, 248.61),
+    },
+    ['lsmyc'] = {
+        label = 'lsmyc Garage',
+        coords = vector4(-727.04, -1299.96, 5.1, 343.35),
+        type = 'public',
+        spawnPoint = vector4(-722.28, -1292.22, 5.0, 227.66),
+        -- Transfer animation points
+        transferSpawn = vector4(-722.28, -1292.22, 5.0, 227.66),
+        transferArrival = vector4(-722.28, -1292.22, 5.0, 227.66),
+        transferExit = vector4(-722.28, -1292.22, 5.0, 227.66),
+    },
+    ['rockford'] = {
+        label = 'rockford Garage',
+        coords = vector4(-598.82, -1126.69, 22.32, 264.74),
+        type = 'public',
+        spawnPoint = vector4(-591.4, -1126.17, 22.18, 88.47),
+        -- Transfer animation points
+        transferSpawn = vector4(-591.4, -1126.17, 22.18, 88.47),
+        transferArrival = vector4(-591.4, -1126.17, 22.18, 88.47),
+        transferExit = vector4(-591.4, -1126.17, 22.18, 88.47),
+    },
+    ['red'] = {
+        label = 'red Garage',
+        coords = vector4(-325.89, -771.19, 33.96, 63.81),
+        type = 'public',
+        spawnPoint = vector4(-331.11, -768.58, 33.97, 126.97),
+        -- Transfer animation points
+        transferSpawn = vector4(-331.11, -768.58, 33.97, 126.97),
+        transferArrival = vector4(-331.11, -768.58, 33.97, 126.97),
+        transferExit = vector4(-331.11, -768.58, 33.97, 126.97),
+    },
+    ['post'] = {
+        label = 'post Garage',
+        coords = vector4(-281.93, -891.03, 31.08, 149.81),
+        type = 'public',
+        spawnPoint = vector4(-288.79, -894.72, 30.37, 247.34),
+        -- Transfer animation points
+        transferSpawn = vector4(-288.79, -894.72, 30.37, 247.34),
+        transferArrival = vector4(-288.79, -894.72, 30.37, 247.34),
+        transferExit = vector4(-288.79, -894.72, 30.37, 247.34),
+    },
+    ['elect'] = {
+        label = 'elect Garage',
+        coords = vector4(363.57, 297.85, 103.51, 288.26),
+        type = 'public',
+        spawnPoint = vector4(367.56, 289.98, 102.66, 160.85),
+        -- Transfer animation points
+        transferSpawn = vector4(367.56, 289.98, 102.66, 160.85),
+        transferArrival = vector4(367.56, 289.98, 102.66, 160.85),
+        transferExit = vector4(367.56, 289.98, 102.66, 160.85),
+    },
+    ['pub'] = {
+        label = 'pub Garage',
+        coords = vector4(-211.27, 297.56, 97.04, 353.42),
+        type = 'public',
+        spawnPoint = vector4(-205.79, 301.93, 96.24, 3.32),
+        -- Transfer animation points
+        transferSpawn = vector4(-205.79, 301.93, 96.24, 3.32),
+        transferArrival = vector4(-205.79, 301.93, 96.24, 3.32),
+        transferExit = vector4(-205.79, 301.93, 96.24, 3.32),
+    },
+    ['pub2'] = {
+        label = 'pub2 Garage',
+        coords = vector4(-339.2, 267.84, 85.69, 300.63),
+        type = 'public',
+        spawnPoint = vector4(-349.42, 272.71, 84.39, 268.85),
+        -- Transfer animation points
+        transferSpawn = vector4(-349.42, 272.71, 84.39, 268.85),
+        transferArrival = vector4(-349.42, 272.71, 84.39, 268.85),
+        transferExit = vector4(-349.42, 272.71, 84.39, 268.85),
+    },
+    ['canne'] = {
+        label = 'canne Garage',
+        coords = vector4(-1200.07, -687.2, 40.36, 51.15),
+        type = 'public',
+        spawnPoint = vector4(-1202.24, -682.77, 39.65, 129.39),
+        -- Transfer animation points
+        transferSpawn = vector4(-1202.24, -682.77, 39.65, 129.39),
+        transferArrival = vector4(-1202.24, -682.77, 39.65, 129.39),
+        transferExit = vector4(-1202.24, -682.77, 39.65, 129.39),
+    },
+    ['porte'] = {
+        label = 'porte Garage',
+        coords = vector4(-788.92, -2409.18, 14.64, 171.57),
+        type = 'public',
+        spawnPoint = vector4(-785.09, -2415.01, 13.86, 329.26),
+        -- Transfer animation points
+        transferSpawn = vector4(-785.09, -2415.01, 13.86, 329.26),
+        transferArrival = vector4(-785.09, -2415.01, 13.86, 329.26),
+        transferExit = vector4(-785.09, -2415.01, 13.86, 329.26),
+    },
+    ['west'] = {
+        label = 'west Garage',
+        coords = vector4(-1986.93, -298.87, 44.11, 224.8),
+        type = 'public',
+        spawnPoint = vector4(-1985.83, -305.64, 43.73, 223.85),
+        -- Transfer animation points
+        transferSpawn = vector4(-1985.83, -305.64, 43.73, 223.85),
+        transferArrival = vector4(-1985.83, -305.64, 43.73, 223.85),
+        transferExit = vector4(-1985.83, -305.64, 43.73, 223.85),
+    },
+     ['west1'] = {
+        label = 'west1 Garage',
+        coords = vector4(-1673.7, 63.84, 63.69, 302.85),
+        type = 'public',
+        spawnPoint = vector4(-1660.58, 75.03, 62.99, 350.55),
+        -- Transfer animation points
+        transferSpawn = vector4(-1660.58, 75.03, 62.99, 350.55),
+        transferArrival = vector4(-1660.58, 75.03, 62.99, 350.55),
+        transferExit = vector4(-1660.58, 75.03, 62.99, 350.55),
+    }
+    
+}
+
+-- Job garages
+Config.JobGarages = {
+    ['police'] = {
+        label = 'Police Garage',
+        coords = vector4(454.6, -1017.4, 28.4, 90.0),
+        type = 'job',
+        job = 'police',
+        spawnPoint = vector4(438.4, -1018.3, 27.7, 90.0),
+        -- Transfer animation points
+        transferSpawn = vector4(431.5, -1035.4, 28.8, 0.0),
+        transferArrival = vector4(452.3, -1023.6, 28.4, 90.0),
+        transferExit = vector4(425.1, -1043.8, 29.2, 180.0),
+        vehicles = {
+            ['police'] = {
+                label = 'Police Cruiser',
+                model = 'police',
+                icon = '🚓'
+            },
+            ['police2'] = {
+                label = 'Police SUV',
+                model = 'police2',
+                icon = '🚓'
+            },
+            ['police3'] = {
+                label = 'Police Interceptor',
+                model = 'police3',
+                icon = '🚓'
+            }
+        }
+    },
+    ['ambulance'] = {
+        label = 'EMS Garage',
+        coords = vector4(327.14, -558.78, 28.74, 339.54),
+        type = 'job',
+        job = 'ambulance',
+        spawnPoint = vector4(329.51, -553.57, 28.74, 157.96),
+        -- Transfer animation points
+        transferSpawn = vector4(329.51, -553.57, 28.74, 157.96),
+        transferArrival = vector4(329.51, -553.57, 28.74, 157.96),
+        transferExit = vector4(329.51, -553.57, 28.74, 157.96),
+        vehicles = {
+            ['ambulance'] = {
+                label = 'Ambulance',
+                model = 'ambulance',
+                icon = '🚑'
+            }
+        }
+    },
+    ['mechanic'] = {
+        label = 'Mechanic Garage',
+        coords = vector4(-344.94, -124.4, 39.01, 339.54),
+        type = 'job',
+        job = 'mechanic',
+        spawnPoint = vector4(-350.85, -136.39, 39.01, 70.29),
+        -- Transfer animation points
+        transferSpawn = vector4(-362.3, -140.8, 38.7, 120.0),
+        transferArrival = vector4(-347.5, -129.2, 39.0, 340.0),
+        transferExit = vector4(-372.6, -148.3, 38.2, 210.0),
+        vehicles = {
+            ['towtruck'] = {
+                label = 'Tow Truck',
+                model = 'towtruck',
+                icon = '🛻'
+            },
+            ['flatbed'] = {
+                label = 'Flatbed',
+                model = 'flatbed',
+                icon = '🚚'
+            }
+        }
+    }
+}
+
+-- Gang garages
+Config.GangGarages = {
+    ['ballas'] = {
+        label = 'Ballas Garage',
+        coords = vector4(83.72, -1932.17, 20.79, 318.73),
+        type = 'gang',
+        gang = 'ballas',
+        spawnPoint = vector4(90.33, -1926.79, 20.69, 47.28),
+        -- Transfer animation points
+        transferSpawn = vector4(104.5, -1946.8, 20.8, 140.0),
+        transferArrival = vector4(84.9, -1925.3, 20.8, 320.0),
+        transferExit = vector4(113.2, -1958.6, 20.7, 230.0),
+    },
+    ['vagos'] = {
+        label = 'Vagos Garage',
+        coords = vector4(334.75, -2039.65, 21.1, 50.36),
+        type = 'gang',
+        gang = 'vagos',
+        spawnPoint = vector4(329.84, -2035.4, 20.99, 139.32),
+        -- Transfer animation points
+        transferSpawn = vector4(315.3, -2023.6, 20.4, 230.0),
+        transferArrival = vector4(332.4, -2037.1, 21.0, 50.0),
+        transferExit = vector4(305.8, -2013.2, 20.0, 140.0),
+    },
+    ['families'] = {
+        label = 'Families Garage',
+        coords = vector4(-108.15, -1607.01, 31.82, 54.69),
+        type = 'gang',
+        gang = 'families',
+        spawnPoint = vector4(-108.15, -1607.01, 31.82, 54.69),
+        -- Transfer animation points
+        transferSpawn = vector4(-108.15, -1607.01, 31.82, 54.69),
+        transferArrival = vector4(-108.15, -1607.01, 31.82, 54.69),
+        transferExit = vector4(-108.15, -1607.01, 31.82, 54.69),
+    },
+    ['lostmc'] = {
+        label = 'lostmc Garage',
+        coords = vector4(970.61, -114.26, 74.35, 219.19),
+        type = 'gang',
+        gang = 'lostmc',
+        spawnPoint = vector4(975.98, -131.79, 73.5, 239.41),
+        -- Transfer animation points
+        transferSpawn = vector4(975.98, -131.79, 73.5, 239.41),
+        transferArrival = vector4(975.98, -131.79, 73.5, 239.41),
+        transferExit = vector4(975.98, -131.79, 73.5, 239.41),
+},
+['cartel'] = {
+        label = 'cartel Garage',
+        coords = vector4(1414.62, 1118.87, 114.84, 90.43),
+        type = 'gang',
+        gang = 'cartel',
+        spawnPoint = vector4(1398.0, 1117.4, 114.84, 82.17),
+        -- Transfer animation points
+        transferSpawn = vector4(1398.1, 1117.4, 114.84, 82.17),
+        transferArrival = vector4(1398.2, 1117.4, 114.84, 82.17),
+        transferExit = vector4(1398.3, 1117.4, 114.84, 82.17),
+}}
+
+
+-- Impound lots
+Config.ImpoundLots = {
+    ['mission_row'] = {
+        label = 'Mission Row Impound',
+        coords = vector4(409.36, -1622.71, 29.29, 140.24),
+        blip = {
+            sprite = 477, 
+            color = 64,  
+            scale = 0.7,
+            display = 4,
+            shortRange = true
+        },
+        spawnPoints = {
+            vector4(404.95, -1643.82, 29.29, 320.0),
+            vector4(408.91, -1646.94, 29.29, 320.0),
+            vector4(412.79, -1650.19, 29.29, 320.0)
+        }
+    },
+    ['paleto'] = {
+        label = 'Paleto Bay Impound',
+        coords = vector4(-193.33, 6271.79, 31.49, 318.48),
+        blip = {
+            sprite = 477,
+            color = 64,
+            scale = 0.7,
+            display = 4,
+            shortRange = true
+        },
+        spawnPoints = {
+            vector4(-187.56, 6266.92, 31.49, 134.48),
+            vector4(-190.56, 6263.92, 31.49, 134.48)
+        }
+    },
+    ['sandy'] = {
+        label = 'Sandy Shores Impound',
+        coords = vector4(1728.61, 3709.35, 34.19, 19.67),
+        blip = {
+            sprite = 477,
+            color = 64,
+            scale = 0.7,
+            display = 4,
+            shortRange = true
+        },
+        spawnPoints = {
+            vector4(1722.34, 3713.63, 34.21, 19.67)
+        }
+    }
 }
